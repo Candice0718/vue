@@ -44,6 +44,7 @@ export class Observer {
     this.dep = new Dep()
     this.vmCount = 0
     def(value, '__ob__', this)
+    // 判断value是对象还是数组
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods)
@@ -52,6 +53,7 @@ export class Observer {
       }
       this.observeArray(value)
     } else {
+      // 对象遍历响应化
       this.walk(value)
     }
   }
@@ -112,6 +114,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
+  // 如果value已经是响应式对象
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -121,6 +124,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+    // 如果不是响应式对象则创建一个新的实例
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -139,6 +143,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 每个key对应一个dep
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -153,16 +158,24 @@ export function defineReactive (
     val = obj[key]
   }
 
-  let childOb = !shallow && observe(val)
+  // 数据拦截定义
+  let childOb = !shallow && observe(val) // 递归
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      // 获取数据
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+        // 依赖收集
+        // 创建dep和watcher之间的多对多关系映射
+        // 一个组件一个渲染watcher 还有watch computed用户watcher，一个属性一个dep 
         dep.depend()
+        // 如果当前value为对象
         if (childOb) {
+          // 子ob中的dep和watcher创建关系
           childOb.dep.depend()
+          // 如果是数组还要遍历每一个数组
           if (Array.isArray(value)) {
             dependArray(value)
           }
@@ -187,7 +200,9 @@ export function defineReactive (
       } else {
         val = newVal
       }
+      // 如果新对象还是对象，需要额外响应化处理
       childOb = !shallow && observe(newVal)
+      // 通知更新
       dep.notify()
     }
   })
@@ -204,15 +219,21 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
   ) {
     warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // 判断target是不是数组并且数组下标有效
   if (Array.isArray(target) && isValidArrayIndex(key)) {
+    // 修改数组长度
     target.length = Math.max(target.length, key)
+    // 添加新加入的数据
+    // 调用数组的原型方法splice
     target.splice(key, 1, val)
     return val
   }
+  // target为对象类型,并且key已经是响应化数据
   if (key in target && !(key in Object.prototype)) {
     target[key] = val
     return val
   }
+  // 添加Ob
   const ob = (target: any).__ob__
   if (target._isVue || (ob && ob.vmCount)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -225,7 +246,9 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
     target[key] = val
     return val
   }
+  // 定义响应化数据
   defineReactive(ob.value, key, val)
+  // 通知更新
   ob.dep.notify()
   return val
 }
@@ -239,7 +262,9 @@ export function del (target: Array<any> | Object, key: any) {
   ) {
     warn(`Cannot delete reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // target数组并且下标有效
   if (Array.isArray(target) && isValidArrayIndex(key)) {
+    // 调用splice删除target数据
     target.splice(key, 1)
     return
   }
@@ -251,13 +276,16 @@ export function del (target: Array<any> | Object, key: any) {
     )
     return
   }
+  // target没有key属性
   if (!hasOwn(target, key)) {
     return
   }
+  // 删除属性
   delete target[key]
   if (!ob) {
     return
   }
+  // 通知更新
   ob.dep.notify()
 }
 

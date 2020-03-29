@@ -28,8 +28,9 @@ export default class Dep {
     remove(this.subs, sub)
   }
 
-  depend () {
+  depend () { // 依赖收集
     if (Dep.target) {
+      // 实际上调用的是watcher的addDep方法
       Dep.target.addDep(this)
     }
   }

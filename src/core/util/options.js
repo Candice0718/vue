@@ -300,6 +300,7 @@ function normalizeProps (options: Object, vm: ?Component) {
   if (!props) return
   const res = {}
   let i, val, name
+  // props是数组
   if (Array.isArray(props)) {
     i = props.length
     while (i--) {
@@ -326,6 +327,7 @@ function normalizeProps (options: Object, vm: ?Component) {
       vm
     )
   }
+  // 将props转为camelize
   options.props = res
 }
 
@@ -394,10 +396,12 @@ export function mergeOptions (
     checkComponents(child)
   }
 
+  // child是class { options }
   if (typeof child === 'function') {
     child = child.options
   }
 
+  // 标准化props
   normalizeProps(child, vm)
   normalizeInject(child, vm)
   normalizeDirectives(child)
@@ -407,9 +411,11 @@ export function mergeOptions (
   // the result of another mergeOptions call.
   // Only merged options has the _base property.
   if (!child._base) {
+    // 递归：混入extends
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
+    // 递归：混入mixins
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)

@@ -31,14 +31,18 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// 安装web平台的布丁函数: 虚拟dom, diff发生的入口点
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
+
+// 实现$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined
+  // 挂载组件 this.$vm.$el = el
   return mountComponent(this, el, hydrating)
 }
 

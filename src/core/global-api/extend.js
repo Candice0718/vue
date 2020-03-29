@@ -16,6 +16,7 @@ export function initExtend (Vue: GlobalAPI) {
   /**
    * Class inheritance
    */
+  // 生成子类构造函数
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
     const Super = this
@@ -31,11 +32,15 @@ export function initExtend (Vue: GlobalAPI) {
     }
 
     const Sub = function VueComponent (options) {
+      // src/core/instance/init.js 混入_init 执行初始化流程
       this._init(options)
     }
+    // 复制父亲的原型链
+    // 子类原型链 = 父亲的原型链
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
+    // 合并options
     Sub.options = mergeOptions(
       Super.options,
       extendOptions
@@ -46,9 +51,13 @@ export function initExtend (Vue: GlobalAPI) {
     // the Vue instances at extension time, on the extended prototype. This
     // avoids Object.defineProperty calls for each instance created.
     if (Sub.options.props) {
+      // 初始化Sub的props 
+      // 执行proxy() , this._data.xx = this.xx
       initProps(Sub)
     }
     if (Sub.options.computed) {
+      // 初始化Sub的Computed
+      // 执行proxy() , this._data.xx = this.xx
       initComputed(Sub)
     }
 

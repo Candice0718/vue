@@ -744,10 +744,13 @@ export function createPatchFunction (backend) {
         }
 
         // replacing existing element
+        // 老的模版元素
         const oldElm = oldVnode.elm
+        // 获取父节点
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node
+        // 创建一个新元素
         createElm(
           vnode,
           insertedVnodeQueue,
@@ -755,6 +758,7 @@ export function createPatchFunction (backend) {
           // leaving transition. Only happens when combining transition +
           // keep-alive + HOCs. (#4590)
           oldElm._leaveCb ? null : parentElm,
+          // 放到老元素的边上
           nodeOps.nextSibling(oldElm)
         )
 
@@ -789,6 +793,7 @@ export function createPatchFunction (backend) {
         }
 
         // destroy old node
+        // 删除老的元素节点
         if (isDef(parentElm)) {
           removeVnodes([oldVnode], 0, 0)
         } else if (isDef(oldVnode.tag)) {

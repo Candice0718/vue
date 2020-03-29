@@ -7,6 +7,7 @@ import { defineReactive, toggleObserving } from '../observer/index'
 export function initProvide (vm: Component) {
   const provide = vm.$options.provide
   if (provide) {
+    // 初始化provide
     vm._provided = typeof provide === 'function'
       ? provide.call(vm)
       : provide
@@ -14,6 +15,7 @@ export function initProvide (vm: Component) {
 }
 
 export function initInjections (vm: Component) {
+  // inject数据响应式
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
     toggleObserving(false)
@@ -29,6 +31,7 @@ export function initInjections (vm: Component) {
           )
         })
       } else {
+        // inject数据响应式入口
         defineReactive(vm, key, result[key])
       }
     })

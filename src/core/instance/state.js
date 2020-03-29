@@ -50,6 +50,7 @@ export function initState (vm: Component) {
   const opts = vm.$options
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
+  // 数据响应式入口
   if (opts.data) {
     initData(vm)
   } else {
@@ -144,10 +145,12 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      // 将data中的属性代理到vm上
       proxy(vm, `_data`, key)
     }
   }
   // observe data
+  // 循环递归 响应化起始点，返回一个Ob实例
   observe(data, true /* asRootData */)
 }
 
@@ -339,6 +342,7 @@ export function stateMixin (Vue: Class<Component>) {
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
+  // src/core/observer/index.js 实现set、delete
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
@@ -353,6 +357,7 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
+    // 创建用户watcher
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
       try {

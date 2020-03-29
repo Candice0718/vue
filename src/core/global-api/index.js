@@ -40,7 +40,8 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     mergeOptions,
     defineReactive
   }
-
+  // 
+  // Vue.util.defineReactive(obj, key, val) 响应式数据
   Vue.set = set
   Vue.delete = del
   Vue.nextTick = nextTick
