@@ -31,12 +31,14 @@ export default class Dep {
   depend () { // 依赖收集
     if (Dep.target) {
       // 实际上调用的是watcher的addDep方法
+      // Dep.target = watcher实例，watcher添加Dep
       Dep.target.addDep(this)
     }
   }
 
   notify () {
     // stabilize the subscriber list first
+    // 拿到所有的watcher
     const subs = this.subs.slice()
     if (process.env.NODE_ENV !== 'production' && !config.async) {
       // subs aren't sorted in scheduler if not running async

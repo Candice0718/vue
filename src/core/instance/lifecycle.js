@@ -56,20 +56,24 @@ export function initLifecycle (vm: Component) {
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
-  // _update 布丁方法的调用者 diff 
+  // _update 布丁方法的调用者 diff 虚拟dom起始点
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
+    // 获取旧的虚拟dom
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // 是否存在旧的虚拟dom
     if (!prevVnode) {
       // initial render
+      // 初始化渲染
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // 更新阶段 diff发生的地方 src/platforms/web/runtime/patch.js
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
@@ -188,6 +192,7 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
+      // 真正做更新的地方
       vm._update(vm._render(), hydrating)
     }
   }

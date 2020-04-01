@@ -346,6 +346,8 @@ export function stateMixin (Vue: Class<Component>) {
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
+  // unWatch = vm.$watch('$route', function(newVal, oldVal) {})
+  // vm.$watch('$route', { immediate, handler: {}})
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,
@@ -356,8 +358,8 @@ export function stateMixin (Vue: Class<Component>) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
-    options.user = true
     // 创建用户watcher
+    options.user = true
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
       try {

@@ -68,6 +68,7 @@ if (inBrowser && !isIE) {
 /**
  * Flush both queues and run the watchers.
  */
+// 刷新任务队列
 function flushSchedulerQueue () {
   currentFlushTimestamp = getNow()
   flushing = true
@@ -86,6 +87,7 @@ function flushSchedulerQueue () {
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
   for (index = 0; index < queue.length; index++) {
+    // 获取当前队列中第一个watcher执行
     watcher = queue[index]
     if (watcher.before) {
       watcher.before()
@@ -162,10 +164,15 @@ function callActivatedHooks (queue) {
  * pushed when the queue is being flushed.
  */
 export function queueWatcher (watcher: Watcher) {
+  // 获取id
   const id = watcher.id
+  // 判断watchers队列是否存在这个watcher
+  // 如果没有添加到队列中
   if (has[id] == null) {
+    // 避免重复添加
     has[id] = true
     if (!flushing) {
+      // 入队
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id
@@ -177,6 +184,7 @@ export function queueWatcher (watcher: Watcher) {
       queue.splice(i + 1, 0, watcher)
     }
     // queue the flush
+    // 是否处于等待状态
     if (!waiting) {
       waiting = true
 
@@ -184,6 +192,7 @@ export function queueWatcher (watcher: Watcher) {
         flushSchedulerQueue()
         return
       }
+      // 异步刷新任务队列
       nextTick(flushSchedulerQueue)
     }
   }

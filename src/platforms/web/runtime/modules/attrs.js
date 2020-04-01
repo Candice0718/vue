@@ -18,6 +18,7 @@ import {
   convertEnumeratedValue
 } from 'web/util/index'
 
+// 更新节点的属性
 function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   const opts = vnode.componentOptions
   if (isDef(opts) && opts.Ctor.options.inheritAttrs === false) {

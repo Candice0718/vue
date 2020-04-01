@@ -6,23 +6,21 @@
   <script src="../../dist/vue.js"></script>
 </head>
 <body>
-    <div id="app">
-      {{foo.baz}}
-    </div>
-    <script>
-      new Vue({
+  <div id="app">
+    {{foo}}
+  </div>
+  <script>
+    new Vue({
         el: '#app',
         data: {
-          foo: {
-            baz: 'wq'
-          }
+          foo: ['arr', 'brr']
         },
         created() {
-          setTimeout(function() {
-            this.foo = 'wq'
+          setTimeout(() =>{
+            Vue.set(this.foo, 2, 'crr')
           }, 1000);
         },
       })
-    </script>
+  </script>
 </body>
 </html>

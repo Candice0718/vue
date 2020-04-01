@@ -103,6 +103,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      // this.getter = updateComponent
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -170,6 +171,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
+      // watcher队列
       queueWatcher(this)
     }
   }
@@ -180,6 +182,7 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
+      // 执行get方法
       const value = this.get()
       if (
         value !== this.value ||
