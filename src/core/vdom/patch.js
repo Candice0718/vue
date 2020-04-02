@@ -129,6 +129,7 @@ export function createPatchFunction (backend) {
 
   let creatingElmInVPre = 0
 
+  // 将传入的vNode转换为dom
   function createElm (
     vnode,
     insertedVnodeQueue,
@@ -148,6 +149,8 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+
+    // 如果传入vnode是自定义组件
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -173,7 +176,7 @@ export function createPatchFunction (backend) {
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
-      setScope(vnode)
+      setScope(vnode) // 设置样式
 
       /* istanbul ignore if */
       if (__WEEX__) {
@@ -195,6 +198,7 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 递归子元素创建
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -215,9 +219,12 @@ export function createPatchFunction (backend) {
   }
 
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+    // 拿出data数据
     let i = vnode.data
     if (isDef(i)) {
+      // 如果实例已经存在，则是缓存组件实例
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 如果hook存在，执行init hook
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -225,8 +232,11 @@ export function createPatchFunction (backend) {
       // it should've created a child instance and mounted it. the child
       // component also has set the placeholder vnode's elm.
       // in that case we can just return the element and be done.
+      // 如果实例创建成功
       if (isDef(vnode.componentInstance)) {
+        // 属性初始化工作
         initComponent(vnode, insertedVnodeQueue)
+        // dom操作
         insert(parentElm, vnode.elm, refElm)
         if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)

@@ -44,6 +44,7 @@ export function generate (
   ast: ASTElement | void,
   options: CompilerOptions
 ): CodegenResult {
+  // 抽象代码生成器状态
   const state = new CodegenState(options)
   const code = ast ? genElement(ast, state) : '_c("div")'
   return {
@@ -161,7 +162,7 @@ function genIfConditions (
   if (!conditions.length) {
     return altEmpty || '_e()'
   }
-
+  // if条件
   const condition = conditions.shift()
   if (condition.exp) {
     return `(${condition.exp})?${

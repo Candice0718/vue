@@ -12,10 +12,13 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  // 1. 解析：将用户传入的html字符串变成AST（js对象，类似于虚拟dom）
   const ast = parse(template.trim(), options)
+  // 2. 优化：标记静态节点 {static: false, staticRoot: false}
   if (options.optimize !== false) {
     optimize(ast, options)
   }
+  // 3.代码生成，将ast转换为渲染函数字符串，new Function(str)
   const code = generate(ast, options)
   return {
     ast,

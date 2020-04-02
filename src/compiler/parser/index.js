@@ -76,24 +76,30 @@ export function createASTElement (
 /**
  * Convert HTML string to AST.
  */
+// <div>{{foo + bar}}</div>
+// <div>{{foo | 'MMMM'}}</div>
+
 export function parse (
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
   warn = options.warn || baseWarn
 
+  // 选项的预处理
   platformIsPreTag = options.isPreTag || no
   platformMustUseProp = options.mustUseProp || no
   platformGetTagNamespace = options.getTagNamespace || no
   const isReservedTag = options.isReservedTag || no
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
+  // 扩展编译功能
   transforms = pluckModuleFunction(options.modules, 'transformNode')
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
   delimiters = options.delimiters
 
+  // 核心代码
   const stack = []
   const preserveWhitespace = options.preserveWhitespace !== false
   const whitespaceOption = options.whitespace
@@ -201,6 +207,7 @@ export function parse (
     }
   }
 
+  // 解析html模版
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
@@ -211,6 +218,7 @@ export function parse (
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
     start (tag, attrs, unary, start, end) {
+      // 遇到开始标签处理
       // check namespace.
       // inherit parent ns if there is one
       const ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag)
@@ -220,7 +228,7 @@ export function parse (
       if (isIE && ns === 'svg') {
         attrs = guardIESVGBug(attrs)
       }
-
+      // 创建ast
       let element: ASTElement = createASTElement(tag, attrs, currentParent)
       if (ns) {
         element.ns = ns
@@ -277,6 +285,8 @@ export function parse (
         processRawAttrs(element)
       } else if (!element.processed) {
         // structural directives
+        // 处理结构性指令
+        // 优先级：for > if > once
         processFor(element)
         processIf(element)
         processOnce(element)
@@ -291,6 +301,7 @@ export function parse (
 
       if (!unary) {
         currentParent = element
+        // 入栈
         stack.push(element)
       } else {
         closeElement(element)
@@ -300,6 +311,7 @@ export function parse (
     end (tag, start, end) {
       const element = stack[stack.length - 1]
       // pop stack
+      // 出栈
       stack.length -= 1
       currentParent = stack[stack.length - 1]
       if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
@@ -528,7 +540,9 @@ export function parseFor (exp: string): ?ForParseResult {
 }
 
 function processIf (el) {
+  // 删除v-if标签
   const exp = getAndRemoveAttr(el, 'v-if')
+  // 表达式
   if (exp) {
     el.if = exp
     addIfCondition(el, {

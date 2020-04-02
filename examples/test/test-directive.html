@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../../dist/vue.js"></script>
+</head>
+<body>
+  <div id="demo">
+    <!-- 出现静态节点嵌套情况下会做优化标记 -->
+    <h1><span>Vue</span>模版编译</h1>
+    <p v-if="foo">{{foo}}</p>
+    <p v-for="s in arr" :key="s">{{s}}</p>
+    <comp></comp>
+  </div>
+  <script>
+    Vue.component('comp', {
+      template: '<div>i am comp</div>'
+    })
+    // 创建实例
+    let app = new Vue({
+      el: '#demo',
+      data: {
+        foo: 'foo',
+        arr: [1, 2, 3]
+      },
+    })
+    // 输出render
+    console.log(app.$options.render)
+  </script>
+</body>
+</html>

@@ -34,7 +34,9 @@ import {
 
 // inline hooks to be invoked on component VNodes during patch
 const componentVNodeHooks = {
+  // 初始化： 实例化、挂载
   init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
+    // 首先判断实例是否已经存在，如果是keep-alive实例没有销毁状态
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
@@ -44,14 +46,16 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      // 创建组件实例并挂载 child是vueComponent
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
+      // 将虚拟节点变成真实节点   创建是自上而下，挂载是自下而上的
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
-
+  // 
   prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = vnode.componentInstance = oldVnode.componentInstance
@@ -97,7 +101,8 @@ const componentVNodeHooks = {
 }
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
-
+// 通过Ctor获取虚拟dom:   new Ctor().render()
+// {render()}
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
@@ -108,7 +113,7 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
-
+  // 容错处理
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
@@ -126,6 +131,7 @@ export function createComponent (
   }
 
   // async component
+  // 异步组件处理
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor
@@ -152,6 +158,7 @@ export function createComponent (
 
   // transform component v-model data into props & events
   if (isDef(data.model)) {
+    // 双向数据绑定
     transformModel(Ctor.options, data)
   }
 
@@ -165,6 +172,7 @@ export function createComponent (
 
   // extract listeners, since these needs to be treated as
   // child component listeners instead of DOM listeners
+  // 事件处理
   const listeners = data.on
   // replace with listeners with .native modifier
   // so it gets processed during parent component patch.
@@ -183,6 +191,7 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 安装组件的钩子函数
   installComponentHooks(data)
 
   // return a placeholder vnode
@@ -215,16 +224,19 @@ export function createComponentInstanceForVnode (
     parent
   }
   // check inline-template render functions
+  // inline-template 行内模版
   const inlineTemplate = vnode.data.inlineTemplate
   if (isDef(inlineTemplate)) {
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
-  return new vnode.componentOptions.Ctor(options)
+  return new vnode.componentOptions.Ctor(options) // 组件的构造函数保存在vnode.componentOptions.Ctor
 }
 
 function installComponentHooks (data: VNodeData) {
+  // 查找data中是否存在钩子
   const hooks = data.hook || (data.hook = {})
+  // hooksToMerge是默认钩子
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
     const existing = hooks[key]

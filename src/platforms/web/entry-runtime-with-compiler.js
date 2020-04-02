@@ -66,7 +66,7 @@ Vue.prototype.$mount = function (
         mark('compile')
       }
 
-      // 将template转换render
+      // 将template转换render ,编译模版的入口点
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,

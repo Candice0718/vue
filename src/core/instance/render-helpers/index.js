@@ -15,19 +15,19 @@ import { bindDynamicKeys, prependModifier } from './bind-dynamic-keys'
 export function installRenderHelpers (target: any) {
   target._o = markOnce
   target._n = toNumber
-  target._s = toString
-  target._l = renderList
-  target._t = renderSlot
+  target._s = toString // 格式化
+  target._l = renderList // 循环
+  target._t = renderSlot // 插槽
   target._q = looseEqual
   target._i = looseIndexOf
-  target._m = renderStatic
+  target._m = renderStatic // 静态文本
   target._f = resolveFilter
   target._k = checkKeyCodes
   target._b = bindObjectProps
-  target._v = createTextVNode
-  target._e = createEmptyVNode
-  target._u = resolveScopedSlots
-  target._g = bindObjectListeners
-  target._d = bindDynamicKeys
+  target._v = createTextVNode // 文本
+  target._e = createEmptyVNode // 空节点
+  target._u = resolveScopedSlots // 作用域插槽
+  target._g = bindObjectListeners // 事件
+  target._d = bindDynamicKeys // 动态key
   target._p = prependModifier
 }

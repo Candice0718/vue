@@ -57,6 +57,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // compile
+    // tempalte 字符串模版
     const compiled = compile(template, options)
 
     // check compilation errors/tips
