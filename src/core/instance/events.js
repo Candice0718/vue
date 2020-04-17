@@ -14,6 +14,7 @@ export function initEvents (vm: Component) {
   vm._hasHookEvent = false
   // init parent attached events
   // 获取父组件中声明的事件处理器， 谁派发谁监听
+  // 自定义组件中真正做事情监听的是事件派发者自己，也就是子组件
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)
@@ -62,6 +63,7 @@ export function eventsMixin (Vue: Class<Component>) {
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
+      // 若存在hook事件则添加标记
       if (hookRE.test(event)) {
         vm._hasHookEvent = true
       }
@@ -71,6 +73,7 @@ export function eventsMixin (Vue: Class<Component>) {
 
   Vue.prototype.$once = function (event: string, fn: Function): Component {
     const vm: Component = this
+    // 高阶函数，仅执行一次回调fn就销毁
     function on () {
       vm.$off(event, on)
       fn.apply(vm, arguments)
@@ -83,11 +86,13 @@ export function eventsMixin (Vue: Class<Component>) {
   Vue.prototype.$off = function (event?: string | Array<string>, fn?: Function): Component {
     const vm: Component = this
     // all
+    // 无参数，清楚所有事件监听
     if (!arguments.length) {
       vm._events = Object.create(null)
       return vm
     }
     // array of events
+    // 传入事件名称数组
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         vm.$off(event[i], fn)
@@ -95,6 +100,7 @@ export function eventsMixin (Vue: Class<Component>) {
       return vm
     }
     // specific event
+    // 如果用户没指定fn参数，相关所有回调都清除
     const cbs = vm._events[event]
     if (!cbs) {
       return vm
@@ -104,6 +110,7 @@ export function eventsMixin (Vue: Class<Component>) {
       return vm
     }
     // specific handler
+    // 特定处理器，如果用户指定fn参数、则仅剩删除该回调
     let cb
     let i = cbs.length
     while (i--) {

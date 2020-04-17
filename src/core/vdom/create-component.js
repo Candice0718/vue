@@ -260,9 +260,12 @@ function mergeHook (f1: any, f2: any): Function {
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
 function transformModel (options, data: any) {
+  // 如果用户有自定义的属性名称则使用他们
+  // 否则使用默认的value和input
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'
   ;(data.attrs || (data.attrs = {}))[prop] = data.model.value
+  // v-model = "foo" @input="onInput"
   const on = data.on || (data.on = {})
   const existing = on[event]
   const callback = data.model.callback
@@ -272,6 +275,7 @@ function transformModel (options, data: any) {
         ? existing.indexOf(callback) === -1
         : existing !== callback
     ) {
+      // 拼接回调数组
       on[event] = [callback].concat(existing)
     }
   } else {

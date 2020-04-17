@@ -8,10 +8,12 @@
 <body>
   <div id="demo">
     <!-- 出现静态节点嵌套情况下会做优化标记 -->
-    <h1><span>Vue</span>模版编译</h1>
+    <!-- <h1><span>Vue</span>模版编译</h1>
     <p v-if="foo">{{foo}}</p>
     <p v-for="s in arr" :key="s">{{s}}</p>
-    <comp></comp>
+    <div @click="onClick" style="margin-bottom: 10px;">{{foo}}</div> -->
+    <input v-model="foo">
+    <!-- <comp></comp> -->
   </div>
   <script>
     Vue.component('comp', {
@@ -23,6 +25,11 @@
       data: {
         foo: 'foo',
         arr: [1, 2, 3]
+      },
+      methods: {
+        onClick() {
+          console.log('on click!')
+        }
       },
     })
     // 输出render

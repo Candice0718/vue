@@ -39,7 +39,7 @@ export type CodegenResult = {
   render: string,
   staticRenderFns: Array<string>
 };
-
+// 自动生成代码
 export function generate (
   ast: ASTElement | void,
   options: CompilerOptions

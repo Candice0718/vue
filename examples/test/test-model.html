@@ -7,13 +7,19 @@
 </head>
 <body>
   <div id="app">
-    <div v-for="fo in foo">{{fo}}</div>
+    <input v-model="test" type="range"/>
+    {{test}}
   </div>
   <script>
     new Vue({
         el: '#app',
         data: {
-          foo: ['arr', 'brr']
+          test: ""
+        },
+        created() {
+          setTimeout(() => {
+            this.test="hahah"
+          }, 500)
         }
       })
   </script>
